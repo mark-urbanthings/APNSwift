@@ -39,7 +39,8 @@ public struct APNSLiveActivityNotification<ContentState: Encodable>: Encodable {
     /// Event type e.g. update
     public var event: APNSLiveActivityNotificationEvent {
         get {
-            return APNSLiveActivityNotificationEvent(rawValue: self.aps.event)
+            return APNSLiveActivityNotificationEvent(rawValue: self.aps.event,
+                                                     dismissalTime: self.aps.dismissalDate)
         }
         
         set {
@@ -110,7 +111,6 @@ public struct APNSLiveActivityNotification<ContentState: Encodable>: Encodable {
         contentState: ContentState,
         event: APNSLiveActivityNotificationEvent,
         timestamp: Int,
-        dismissalDate: APNSLiveActivityDismissalDate = .none,
         apnsID: UUID? = nil
     ) {
         self.init(
@@ -119,8 +119,7 @@ public struct APNSLiveActivityNotification<ContentState: Encodable>: Encodable {
             topic: appID + ".push-type.liveactivity",
             contentState: contentState,
             event: event,
-            timestamp: timestamp,
-            dismissalDate: dismissalDate
+            timestamp: timestamp
         )
     }
     
@@ -147,14 +146,13 @@ public struct APNSLiveActivityNotification<ContentState: Encodable>: Encodable {
         apnsID: UUID? = nil,
         contentState: ContentState,
         event: APNSLiveActivityNotificationEvent,
-        timestamp: Int,
-        dismissalDate: APNSLiveActivityDismissalDate = .none
+        timestamp: Int
     ) {
         self.aps = APNSLiveActivityNotificationAPSStorage(
             timestamp: timestamp,
             event: event.rawValue,
             contentState: contentState,
-            dismissalDate: dismissalDate.dismissal
+            dismissalDate: event.dismissalTime
         )
         self.apnsID = apnsID
         self.expiration = expiration

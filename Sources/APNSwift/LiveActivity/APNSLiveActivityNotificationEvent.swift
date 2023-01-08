@@ -12,15 +12,33 @@
 //
 //===----------------------------------------------------------------------===//
 
+import struct Foundation.Date
+import struct Foundation.TimeInterval
+
 public struct APNSLiveActivityNotificationEvent: Hashable {
     
     /// The underlying raw value that is send to APNs.
     @usableFromInline
     internal let rawValue: String
-    
+
+    @usableFromInline
+    internal let dismissalTime: Int?
+
     /// Specifies that live activity should be updated
-    public static let update = Self(rawValue: "update")
+    public static let update = Self(rawValue: "update", dismissalTime: nil)
     
     /// Specifies that live activity should be ended
-    public static let end = Self(rawValue: "end")
+    public static let end = Self(rawValue: "end", dismissalTime: nil)
+
+    /// Specifies that live activity should be ended with dismissal from view
+    /// at a specific point in time.
+    public static func end(dismissalTime: Date) -> Self {
+        Self(rawValue: "end", dismissalTime: Int(dismissalTime.timeIntervalSince1970))
+    }
+
+    /// Specifies that live activity should be ended with dismissal from view
+    /// in a given number of seconds
+    public static func end(dismissalIn: Int) -> Self {
+        end(dismissalTime: Date(timeIntervalSinceNow: TimeInterval(dismissalIn)))
+    }
 }
